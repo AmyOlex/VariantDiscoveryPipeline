@@ -187,7 +187,7 @@ do
 
 	                if [ ! -e $output ];
 	                then
-#	                   cmd=`echo "java -Xmx8g -Djava.io.tmpdir=/home/alolex/tmp/scratch -jar /opt/GenomeAnalysisTK-3.1/GenomeAnalysisTK.jar -T HaplotypeCaller -R /data/refGenomes/human/GRCh37-lite/GRCh37-lite.fa -I $input -o $output -ERC NONE -baqGOP 30 -variant_index_type LINEAR -variant_index_parameter 128000 --genotyping_mode DISCOVERY -stand_emit_conf 10 -stand_call_conf 30 -nct 4"`
+	                   cmd=`echo "java -Xmx8g -Djava.io.tmpdir=/home/alolex/tmp/scratch -jar /opt/GenomeAnalysisTK-3.1/GenomeAnalysisTK.jar -T HaplotypeCaller -R /data/refGenomes/human/GRCh37-lite/GRCh37-lite.fa -I $input -o $output -ERC NONE -baqGOP 30 -variant_index_type LINEAR -variant_index_parameter 128000 --genotyping_mode DISCOVERY -stand_emit_conf 10 -stand_call_conf 30 -nct 4"`
 	                   echo "Executing Step 6 at `date` ... $cmd" >> $LOGFILE
 			   echo "Executing Step 6 ... $cmd"
 	                   eval $cmd
@@ -266,7 +266,7 @@ do
 
 	                if [ ! -e $outfile ];
 	                then
-	                   cmd=`echo "ruby1.9 ~/bin/Atlas2_v1.4.3/Atlas-SNP2/Atlas-SNP2.rb -i $input -r /data/refGenomes/human/GRCh37-lite/GRCh37-lite.fa -o $output -n $output --Illumina -t $”ATLAS_CHR`
+	                   cmd=`echo "ruby1.9 ~/bin/Atlas2_v1.4.3/Atlas-SNP2/Atlas-SNP2.rb -i $input -r /data/refGenomes/human/GRCh37-lite/GRCh37-lite.fa -o $output -n $output --Illumina -t $ATLAS_CHR"`
 	                   echo "Executing Step 6 at `date` … $cmd" >> $LOGFILE
 			   echo "Executing Step 6 ... $cmd"
 	                   eval $cmd
