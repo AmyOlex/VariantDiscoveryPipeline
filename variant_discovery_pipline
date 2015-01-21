@@ -111,8 +111,8 @@ do
 			   echo "Done Step 3.4 at `date` " >> $LOGFILE
 			   echo "Done Step 3.4 at `date` " 
 			else
-			   echo "File Exists, moving to step 4.2 .. $outfile"
-			   echo "File Exists, moving to step 4.2 .. $outfile" >> $LOGFILE
+			   echo "File Exists, moving to step 4.2 : $OUTDIR$filebase.gatkReady.bai"
+			   echo "File Exists, moving to step 4.2 : $OUTDIR$filebase.gatkReady.bai" >> $LOGFILE
 			fi
 		fi   ###end if $PREPROCESS
 
@@ -135,8 +135,8 @@ do
 		   	    echo "Done Step 4.2 at `date` " >> $LOGFILE
 			    echo "Done Step 4.2 at `date` "
                 	else
-                   	    echo "File Found, moving to step 5.1 : $outfile" >> $LOGFILE
-		   	    echo "File Found, moving to step 5.1 : $outfile"
+                   	    echo "File Found, moving to step 5.1 : $output" >> $LOGFILE
+		   	    echo "File Found, moving to step 5.1 : $output"
                		 fi
 
 			### Run BaseRecalibrator
@@ -152,7 +152,7 @@ do
 			   echo "Done Step 5.1 at `date` " >> $LOGFILE
 			   echo "Done Step 5.1 at `date` " 
 	                else
-	                   echo "File Found, moving to step 5.4 : $output">> $LOGFILE
+	                   echo "File Found, moving to step 5.4 : $output" >> $LOGFILE
 			   echo "File Found, moving to step 5.4 : $output"
 	                fi
 
