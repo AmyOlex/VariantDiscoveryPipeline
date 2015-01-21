@@ -261,8 +261,8 @@ do
 
 	                ### Run AtlasSNP2
 			input=$output
-	                output=`echo $VCFDIR$output.chr$ATLAS_CHR.snp`
-		   	outfile=`echo $VCFDIR$output.chr$ATLAS_CHR.snp.vcf`
+	                output=`echo $VCFDIR$filebase.chr$ATLAS_CHR.snp`
+		   	outfile=`echo $VCFDIR$filebase.chr$ATLAS_CHR.snp.vcf`
 
 	                if [ ! -e $outfile ];
 	                then
