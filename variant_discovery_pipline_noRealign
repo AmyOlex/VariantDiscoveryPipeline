@@ -117,7 +117,7 @@ do
 		fi   ###end if $PREPROCESS
 
 
-
+####################################
 
 		if [ $REALIGN -eq 1 ];
 		then
@@ -177,6 +177,7 @@ do
 
 
 
+###############################
 
 		if [ $GATK -eq 1 ];
 		then
@@ -260,8 +261,8 @@ do
 		then
 	      ### Run AtlasSNP2
 			input=$output
-	      output=`echo $VCFDIR$filebase.chr$ATLAS_CHR.snp`
-         outfile=`echo $VCFDIR$filebase.chr$ATLAS_CHR.snp.vcf`
+	      output=`echo $VCFDIR$filebase.noRealign.chr$ATLAS_CHR.snp`
+         outfile=`echo $VCFDIR$filebase.noRealign.chr$ATLAS_CHR.snp.vcf`
 
 	      if [ ! -e $outfile ];
 	      then
@@ -272,7 +273,7 @@ do
 			   echo "Done Step 6 at `date`" >> $LOGFILE
 			   echo "Done Step 6"
          else
-	         echo "File Found, AtlasSNP2 processing complete : $output" >> $LOGFILE
+	         echo "File Found, AtlasSNP2 processing complete : $outfile" >> $LOGFILE
 	      fi
 
 		fi  ##end ATLAS
