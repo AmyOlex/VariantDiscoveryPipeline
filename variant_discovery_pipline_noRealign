@@ -18,7 +18,7 @@ BAMDIR="/home/alolex/data/isilon_tcga/BRCA/WXS/"
 VCFDIR="/home/alolex/data/isilon_tcga/BRCA/WXS/atlas_vcf/"
 
 PREPROCESS=1
-REALIGN=1
+REALIGN=0
 GATK=0
 ATLAS=1
 ATLAS_CHR="22"
@@ -122,57 +122,57 @@ do
 		if [ $REALIGN -eq 1 ];
 		then
 
-	                ### Run IndelRealigner
-	      	        input=`echo $OUTDIR$filebase.gatkReady.bam`
-                	output=`echo $OUTDIR$filebase.realign.bam`
+         ### Run IndelRealigner
+         input=`echo $OUTDIR$filebase.gatkReady.bam`
+         output=`echo $OUTDIR$filebase.realign.bam`
 
-	                if [ ! -e $output ];
-        	        then
-       		            cmd=`echo "java -Xmx8g -Djava.io.tmpdir=/home/alolex/tmp/scratch -jar /opt/GenomeAnalysisTK-3.1/GenomeAnalysisTK.jar -I $input -R /data/refGenomes/human/GRCh37-lite/GRCh37-lite.fa -T IndelRealigner -targetIntervals /data/refGenomes/human/GRCh37-lite/GRCh37-lite.gatk.intervals -o $output -known /opt/GenomeAnalysisTK-3.1/resources/Mills_and_1000G_gold_standard.indels.b37.sites.vcf"`
+	      if [ ! -e $output ];
+        	then
+       	    cmd=`echo "java -Xmx8g -Djava.io.tmpdir=/home/alolex/tmp/scratch -jar /opt/GenomeAnalysisTK-3.1/GenomeAnalysisTK.jar -I $input -R /data/refGenomes/human/GRCh37-lite/GRCh37-lite.fa -T IndelRealigner -targetIntervals /data/refGenomes/human/GRCh37-lite/GRCh37-lite.gatk.intervals -o $output -known /opt/GenomeAnalysisTK-3.1/resources/Mills_and_1000G_gold_standard.indels.b37.sites.vcf"`
 			    echo "Executing Step 4.2 at `date` ... $cmd" >> $LOGFILE
 	 		    echo "Executing Step 4.2 ... $cmd"
-                   	    eval $cmd
-		   	    echo "Done Step 4.2 at `date` " >> $LOGFILE
+             eval $cmd
+		       echo "Done Step 4.2 at `date` " >> $LOGFILE
 			    echo "Done Step 4.2 at `date` "
-                	else
-                   	    echo "File Found, moving to step 5.1 : $output" >> $LOGFILE
-		   	    echo "File Found, moving to step 5.1 : $output"
-               		 fi
+         else
+             echo "File Found, moving to step 5.1 : $output" >> $LOGFILE
+		       echo "File Found, moving to step 5.1 : $output"
+         fi
 
 			### Run BaseRecalibrator
-               		input=$output
-                	output=`echo $OUTDIR$filebase.recaldata.table`
+         input=$output
+         output=`echo $OUTDIR$filebase.recaldata.table`
 
-	                if [ ! -e $output ];
-        	        then
-	                   cmd=`echo "java -Xmx8g -Djava.io.tmpdir=/home/alolex/tmp/scratch -jar /opt/GenomeAnalysisTK-3.1/GenomeAnalysisTK.jar -T BaseRecalibrator -R /data/refGenomes/human/GRCh37-lite/GRCh37-lite.fa -I $input -knownSites /opt/GenomeAnalysisTK-3.1/resources/dbsnp_138.b37.vcf -knownSites /opt/GenomeAnalysisTK-3.1/resources/Mills_and_1000G_gold_standard.indels.b37.sites.vcf -o $output"`
-	                   echo "Executing Step 5.1 at `date` ... $cmd" >> $LOGFILE
+	      if [ ! -e $output ];
+        	then
+	         cmd=`echo "java -Xmx8g -Djava.io.tmpdir=/home/alolex/tmp/scratch -jar /opt/GenomeAnalysisTK-3.1/GenomeAnalysisTK.jar -T BaseRecalibrator -R /data/refGenomes/human/GRCh37-lite/GRCh37-lite.fa -I $input -knownSites /opt/GenomeAnalysisTK-3.1/resources/dbsnp_138.b37.vcf -knownSites /opt/GenomeAnalysisTK-3.1/resources/Mills_and_1000G_gold_standard.indels.b37.sites.vcf -o $output"`
+	         echo "Executing Step 5.1 at `date` ... $cmd" >> $LOGFILE
 			   echo "Executing Step 5.1 ... $cmd"
-	                   eval $cmd
+	         eval $cmd
 			   echo "Done Step 5.1 at `date` " >> $LOGFILE
 			   echo "Done Step 5.1 at `date` " 
-	                else
-	                   echo "File Found, moving to step 5.4 : $output" >> $LOGFILE
+	      else
+	         echo "File Found, moving to step 5.4 : $output" >> $LOGFILE
 			   echo "File Found, moving to step 5.4 : $output"
-	                fi
+	      fi
 
-	                ### Run PrintReads
-	                input_bam=`echo $OUTDIR$filebase.realign.bam`
-	                input=$output
-	                output=`echo $OUTDIR$filebase.recal.bam`
+	      ### Run PrintReads
+	      input_bam=`echo $OUTDIR$filebase.realign.bam`
+	      input=$output
+	      output=`echo $OUTDIR$filebase.recal.bam`
 	
-	                if [ ! -e $output ];
-	                then
-	                   cmd=`echo "java -Xmx8g -Djava.io.tmpdir=/home/alolex/tmp/scratch -jar /opt/GenomeAnalysisTK-3.1/GenomeAnalysisTK.jar -T PrintReads -R /data/refGenomes/human/GRCh37-lite/GRCh37-lite.fa -I $input_bam -BQSR $input -o $output"`
-	                   echo "Executing Step 5.4 at `date` ... $cmd" >> $LOGFILE
+	      if [ ! -e $output ];
+	      then
+	         cmd=`echo "java -Xmx8g -Djava.io.tmpdir=/home/alolex/tmp/scratch -jar /opt/GenomeAnalysisTK-3.1/GenomeAnalysisTK.jar -T PrintReads -R /data/refGenomes/human/GRCh37-lite/GRCh37-lite.fa -I $input_bam -BQSR $input -o $output"`
+	         echo "Executing Step 5.4 at `date` ... $cmd" >> $LOGFILE
 			   echo "Executing Step 5.4 ... $cmd"
-	                   eval $cmd
+	         eval $cmd
 			   echo "Done Step 5.4 at `date` " >> $LOGFILE
 			   echo "Done Step 5.4 at `date` "
-	                else
-	                   echo "File Found, moving to step 6 : $output" >> $LOGFILE
+	      else
+	         echo "File Found, moving to step 6 : $output" >> $LOGFILE
 			   echo "File Found, moving to step 6 : $output"
-	                fi
+	      fi
 		fi  #### End if $REALIGN
 
 
@@ -181,29 +181,29 @@ do
 		if [ $GATK -eq 1 ];
 		then
 
-	                ### Run HaplotypeCaller
-	                input=$output
-	                output=`echo $VCFDIR$filebase.rawVariants.vcf`
+	      ### Run HaplotypeCaller
+	      input=$output
+	      output=`echo $VCFDIR$filebase.rawVariants.vcf`
 
-	                if [ ! -e $output ];
-	                then
-	                   cmd=`echo "java -Xmx8g -Djava.io.tmpdir=/home/alolex/tmp/scratch -jar /opt/GenomeAnalysisTK-3.1/GenomeAnalysisTK.jar -T HaplotypeCaller -R /data/refGenomes/human/GRCh37-lite/GRCh37-lite.fa -I $input -o $output -ERC NONE -baqGOP 30 -variant_index_type LINEAR -variant_index_parameter 128000 --genotyping_mode DISCOVERY -stand_emit_conf 10 -stand_call_conf 30 -nct 4"`
-	                   echo "Executing Step 6 at `date` ... $cmd" >> $LOGFILE
+	      if [ ! -e $output ];
+	      then
+	         cmd=`echo "java -Xmx8g -Djava.io.tmpdir=/home/alolex/tmp/scratch -jar /opt/GenomeAnalysisTK-3.1/GenomeAnalysisTK.jar -T HaplotypeCaller -R /data/refGenomes/human/GRCh37-lite/GRCh37-lite.fa -I $input -o $output -ERC NONE -baqGOP 30 -variant_index_type LINEAR -variant_index_parameter 128000 --genotyping_mode DISCOVERY -stand_emit_conf 10 -stand_call_conf 30 -nct 4"`
+	         echo "Executing Step 6 at `date` ... $cmd" >> $LOGFILE
 			   echo "Executing Step 6 ... $cmd"
-	                   eval $cmd
+	         eval $cmd
 			   echo "Done Step 6 at `date` " >> $LOGFILE
 			   echo "Done Step 6 at `date` "
-	                else
-	                   echo "File Found, moving to step 7.1 : $output" >> $LOGFILE
+         else
+	         echo "File Found, moving to step 7.1 : $output" >> $LOGFILE
 			   echo "File Found, moving to step 7.1 : $output"
-	                fi
+	      fi
 
-	                ### Run SelectVariants for SNPs
-	                input=$output
-	                output=`echo $VCFDIR$filebase.rawSNPS.vcf`
+	      ### Run SelectVariants for SNPs
+	      input=$output
+	      output=`echo $VCFDIR$filebase.rawSNPS.vcf`
 
-	                if [ ! -e $output ];
-	                then
+	      if [ ! -e $output ];
+	      then
 	                   cmd=`echo "java -Xmx8g -Djava.io.tmpdir=/home/alolex/tmp/scratch -jar /opt/GenomeAnalysisTK-3.1/GenomeAnalysisTK.jar -T SelectVariants -R /data/refGenomes/human/GRCh37-lite/GRCh37-lite.fa -V $input -selectType SNP -o $output"`
 	                   echo "Executing Step 7.1 at `date` ... $cmd" >> $LOGFILE
 			   echo "Executing Step 7.1 at `date` ... $cmd" 
@@ -258,23 +258,22 @@ do
 
 		if [ $ATLAS -eq 1 ];
 		then
-
-	                ### Run AtlasSNP2
+	      ### Run AtlasSNP2
 			input=$output
-	                output=`echo $VCFDIR$filebase.chr$ATLAS_CHR.snp`
-		   	outfile=`echo $VCFDIR$filebase.chr$ATLAS_CHR.snp.vcf`
+	      output=`echo $VCFDIR$filebase.chr$ATLAS_CHR.snp`
+         outfile=`echo $VCFDIR$filebase.chr$ATLAS_CHR.snp.vcf`
 
-	                if [ ! -e $outfile ];
-	                then
-	                   cmd=`echo "ruby1.9 ~/bin/Atlas2_v1.4.3/Atlas-SNP2/Atlas-SNP2.rb -i $input -r /data/refGenomes/human/GRCh37-lite/GRCh37-lite.fa -o $output -n $output --Illumina -t $ATLAS_CHR"`
-	                   echo "Executing Step 6 at `date` … $cmd" >> $LOGFILE
+	      if [ ! -e $outfile ];
+	      then
+	         cmd=`echo "ruby1.9 ~/bin/Atlas2_v1.4.3/Atlas-SNP2/Atlas-SNP2.rb -i $input -r /data/refGenomes/human/GRCh37-lite/GRCh37-lite.fa -o $output -n $output --Illumina -t $ATLAS_CHR"`
+	         echo "Executing Step 6 at `date` … $cmd" >> $LOGFILE
 			   echo "Executing Step 6 ... $cmd"
-	                   eval $cmd
+	         eval $cmd
 			   echo "Done Step 6 at `date`" >> $LOGFILE
 			   echo "Done Step 6"
-	                else
-	                   echo "File Found, AtlasSNP2 processing complete : $output" >> $LOGFILE
-	                fi
+         else
+	         echo "File Found, AtlasSNP2 processing complete : $output" >> $LOGFILE
+	      fi
 
 		fi  ##end ATLAS
 
