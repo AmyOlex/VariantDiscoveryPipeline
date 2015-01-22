@@ -10,7 +10,7 @@
 #INFILE="test_list.txt"
 INFILE="/home/alolex/data/clients/MDozmorov/analysis_id_list.txt"
 RUNDIR="/home/alolex/data/clients/MDozmorov/atlas2_runs/"
-LOGFILE="/home/alolex/data/clients/MDozmorov/atlas2_runs/variant_pipeline_012115.log"
+LOGFILE="./variant_pipeline_noRealign012215.log"
 TMPDIR="/home/alolex/data/isilon_tcga/BRCA/WXS/tmp_bam/"
 OUTDIR="/home/alolex/data/isilon_tcga/BRCA/WXS/gatk_ready/"
 BAMDIR="/home/alolex/data/isilon_tcga/BRCA/WXS/"
