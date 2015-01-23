@@ -1,0 +1,47 @@
+#!/bin/bash
+
+## Amy Olex
+## 1/22/15
+## This script processes the vcf files output by Atlas2 and GATK into PLINK format.
+## It merges them, edits the patient information based on an association file and extracts raw and common variants.
+## This pipeline is still in developement!
+
+RUNDIR="/home/alolex/data/clients/MDozmorov/plink_analysis/"
+VCFDIR="/home/alolex/data/isilon_tcga/BRCA/WXS/atlas_vcf/"
+FILE_LIST="vcf_files_to_merge.txt"
+basename="noRealign_cohort20_merged12"
+OUT_FILE=`echo $RUNDIR$basename`
+RECODE_FILE="/home/alolex/data/clients/MDozmorov/plink_analysis/patient_recode.txt"
+PHENO_FILE="/home/alolex/data/clients/MDozmorov/plink_analysis/patient_alt_phenotype.txt"
+
+
+## create the list of converted vcf to ped files to merge
+touch $FILE_LIST
+
+
+## read in the list of vcf files to convert and save to an array
+files=(`ls | grep ".*noRealign.*\\.snp\\.vcf$"`)
+
+## loop over the vcf files one at a time and convert to ped format
+
+for f in ${files[@]};
+do
+   /home/alolex/bin/vcftools_0.1.12b/bin/vcftools --vcf $f --plink --out $f
+   echo "$f.ped   $f.map" >> $flist
+done
+
+## merge the files using plink
+plink --noweb --file ${files[1]} --merge-list $flist --recode12 --out $OUT_FILE
+
+
+## Now I need to edit the patient information.  I need to change the PID and FID to the TCGA barcode and not the file name and path.
+plink --noweb --file $OUT_FILE --update-ids $RECODE_FILE --recode --out $OUT_FILE.updated
+
+## Next I need to adjust the phenotype column.  -- Nope!  I just need to specify an alternate phenotype file when I run plink!
+plink --file $basename.updated --noweb --pheno $PHENO_FILE --geno 0.1 --filter-cases --recodeA --max-maf 0.05 --out $OUT_FILE.tumor_rare --nonfounders
+plink --file $basename.updated --noweb --pheno $PHENO_FILE --geno 0.1 --filter-cases --recodeA --maf 0.05 --out $OUT_FILE.tumor_common --nonfounders
+plink --file $basename.updated --noweb --pheno $PHENO_FILE --geno 0.1 --filter-controls --recodeA --max-maf 0.05 --out $OUT_FILE.normal_rare --nonfounders
+plink --file $basename.updated --noweb --pheno $PHENO_FILE --geno 0.1 --filter-controls --recodeA --maf 0.05 --out $OUT_FILE.normal_common --nonfounders
+
+
+
