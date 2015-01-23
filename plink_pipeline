@@ -21,7 +21,7 @@ cd $RUNDIR
 touch $FILE_LIST
 
 ## read in the list of vcf files to convert and save to an array
-files=(`ls #VCFDIR | grep ".*noRealign.*\\.snp\\.vcf$"`)
+files=(`ls $VCFDIR | grep ".*noRealign.*\\.snp\\.vcf$"`)
 
 ## loop over the vcf files one at a time and convert to ped format
 
