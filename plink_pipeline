@@ -8,30 +8,33 @@
 
 RUNDIR="/home/alolex/data/clients/MDozmorov/plink_analysis/"
 VCFDIR="/home/alolex/data/isilon_tcga/BRCA/WXS/atlas_vcf/"
+PEDDIR="/home/alolex/data/clients/MDozmorov/plink_analysis/pedfiles/"
 FILE_LIST="vcf_files_to_merge.txt"
 basename="noRealign_cohort20_merged12"
 OUT_FILE=`echo $RUNDIR$basename`
 RECODE_FILE="/home/alolex/data/clients/MDozmorov/plink_analysis/patient_recode.txt"
 PHENO_FILE="/home/alolex/data/clients/MDozmorov/plink_analysis/patient_alt_phenotype.txt"
 
+cd $RUNDIR
 
 ## create the list of converted vcf to ped files to merge
 touch $FILE_LIST
 
-
 ## read in the list of vcf files to convert and save to an array
-files=(`ls | grep ".*noRealign.*\\.snp\\.vcf$"`)
+files=(`ls #VCFDIR | grep ".*noRealign.*\\.snp\\.vcf$"`)
 
 ## loop over the vcf files one at a time and convert to ped format
 
 for f in ${files[@]};
 do
-   /home/alolex/bin/vcftools_0.1.12b/bin/vcftools --vcf $f --plink --out $f
-   echo "$f.ped   $f.map" >> $flist
+   fullout=`echo $PEDDIR$f`
+   fullin=`echo $VCFDIR$f`
+   /home/alolex/bin/vcftools_0.1.12b/bin/vcftools --vcf $fullin --plink --out $fullout
+   echo "$fullout.ped   $fullout.map" >> $FILE_LIST
 done
 
 ## merge the files using plink
-plink --noweb --file ${files[1]} --merge-list $flist --recode12 --out $OUT_FILE
+plink --noweb --file $PEDDIR${files[1]} --merge-list $FILE_LIST --recode12 --out $OUT_FILE
 
 
 ## Now I need to edit the patient information.  I need to change the PID and FID to the TCGA barcode and not the file name and path.
