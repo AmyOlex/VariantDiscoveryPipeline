@@ -1,0 +1,119 @@
+#!/bin/bash
+
+## Amy Olex
+## 1/29/15
+## This script runs Platypus Variant Calling on PICARD processed BAM files, formatts the resulting VCF file, then runs PLINK analysis to identify common and rare variants.
+
+RUNDIR="/home/alolex/data/clients/MDozmorov/platypus_runs"
+VCFDIR="/home/alolex/data/isilon_tcga/BRCA/WXS/platypus_vcf_files/"
+BAMDIR="/home/alolex/data/isilon_tcga/BRCA/WXS/picard_processed/"
+PEDDIR="/home/alolex/data/clients/MDozmorov/platypus_runs/plink_cohort30/"
+FILE_LIST="vcf_files_to_merge_cohort30.list"
+OUT_FILE="cohort30.bcfmerge.allChrs.vcf"
+RECODE_FILE="patient_recode.txt"
+PHENO_FILE="patient_alt_phenotype.txt"
+EXT="platypusVariantCalls.allChrs.vcf"
+DATE="012915"
+
+echo "Starting Platypus-PLINK Analysis on `date`"
+
+cd $RUNDIR
+
+## get list of bam files to process
+bamfiles=(`cat bam_cohort30_platypus_input.list`)
+
+echo "Running Platypus Variant Finder `date` ..."
+
+## run Platypus on each bam file individually
+for b in ${bamfiles[@]};
+do
+   echo "Processing $b ..."
+   filebase=`basename $b .addgrps.bam`
+   output=`echo $VCFDIR$filebase.$EXT`
+   logout=`echo log.$filebase.$DATE.txt`
+
+   if [ ! -e $output ] && [ ! -e $output.gz ];
+   then
+      echo "Running Platypus `date` ..."
+      python ~/bin/Platypus_0.7.9.1/Platypus.py callVariants --bamFiles=$BAMDIR$b --refFile=/data/refGenomes/human/GRCh37-lite/GRCh37-lite.fa --output=$output --nCPU=7 --logFileName=$logout
+   else
+      echo "Found Platypus Output, skipping ...  $output"
+   fi
+done
+
+## create the list of vcf files that need merging
+touch $FILE_LIST
+
+## read in the list of vcf files to convert and save to an array
+files=(`ls $VCFDIR | grep $EXT`)
+
+echo "Fixing VCF File Format `date` ..."
+
+## loop over the vcf files one at a time, zip using bgzip and index using tabix
+for f in ${files[@]};
+do
+
+   echo "Processing ... `date`  $f"
+
+   $out=`echo $f.gz`
+   if [! -e $out ];
+   then
+      echo "Zipping VCF File ..."
+      bgzip $VCFDIR$f
+   else
+      echo "Found zipped file, skipping ..."
+   fi
+
+
+   $out=`echo $RUNDIR/formatted_vcf_files/$f.gz`
+   if [! -e $out ];
+   then
+      echo "Renaming Sample and Running TABIX..."
+      rm $out.tbi
+     
+      filebase=`basename $f .$EXT`
+
+      touch sample.rename
+      echo "`grep $filebase $RECODE_FILE | cut -f 4`" > sample.rename
+      bgzip sample.rename
+
+      echo "$RUNDIR/formatted_vcf_files/$f.gz" >> $FILE_LIST
+      ~/bin/bcftools/bcftools reheader -s sample.rename.gz $VCFDIR$f.gz > formatted_vcf_files/$f.gz
+      tabix -p vcf ./formatted_vcf_files/$f.gz
+      rm sample.rename.gz
+   else
+      echo "Formatted VCF File found, adding to list and skipping ..."
+      echo "$RUNDIR/formatted_vcf_files/$f.gz" >> $FILE_LIST
+   fi
+
+done
+
+cd $PEDDIR
+
+if [ ! -e $OUT_FILE ];
+then
+   echo "Merging and Filtering VCF Files ... `date`"
+   ## merge the files using bcftools
+   ~/bin/bcftools/bcftools merge -o $OUT_FILE -O v `cat ../$FILE_LIST`
+
+   echo "Filtering out indels and selecting main chromosomes... `date`"
+
+   ## filter for snps only and remove indels
+   ~/bin/vcftools_0.1.12b/bin/vcftools --vcf $OUT_FILE --out $OUT_FILE.SNPS.mainChrs --remove-indels --recode --chr 1 --chr 2 --chr 3 --chr 4 --chr 5 --chr 6 --chr 7 --chr 8 --chr 9 --chr 10 --chr 11 --chr 12 --chr 13 --chr 14 --chr 15 --chr 16 --chr 17 --chr 18 --chr 19 --chr 20 --chr 21 --chr 22 --chr X --chr Y 
+else
+   echo "Merged VCF file, and SNPS and chromosome filtered files already exist, skipping to PLINK ..."
+fi
+
+echo "Applying PLINK Analysis... `date`"
+
+## Convert the new file to plink format.
+/home/alolex/bin/vcftools_0.1.12b/bin/vcftools --vcf $OUT_FILE.SNPS.mainChrs.recode.vcf --plink --out $OUT_FILE.SNPS.mainChrs.recode
+
+## Next I need to adjust the phenotype column.  -- Nope!  I just need to specify an alternate phenotype file when I run plink!
+plink --file $OUT_FILE.SNPS.mainChrs.recode --noweb --pheno $RUNDIR/$PHENO_FILE --geno 0.1 --filter-cases --recodeA --max-maf 0.05 --out $OUT_FILE.SNPS.mainChrs.tumor_rare --nonfounders
+plink --file $OUT_FILE.SNPS.mainChrs.recode --noweb --pheno $RUNDIR/$PHENO_FILE --geno 0.1 --filter-cases --recodeA --maf 0.05 --out $OUT_FILE.SNPS.mainChrs.tumor_common --nonfounders
+plink --file $OUT_FILE.SNPS.mainChrs.recode --noweb --pheno $RUNDIR/$PHENO_FILE --geno 0.1 --filter-controls --recodeA --max-maf 0.05 --out $OUT_FILE.SNPS.mainChrs.normal_rare --nonfounders
+plink --file $OUT_FILE.SNPS.mainChrs.recode --noweb --pheno $RUNDIR/$PHENO_FILE --geno 0.1 --filter-controls --recodeA --maf 0.05 --out $OUT_FILE.SNPS.mainChrs.normal_common --nonfounders
+
+
+echo "Finished Platypus-PLINK Analysis on `date`"
