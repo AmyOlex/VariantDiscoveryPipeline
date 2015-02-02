@@ -21,7 +21,7 @@ $(BAMFILES):
 
 ### Creates the directory structure within the main BAM file folder.
 picard_processed: $(BAMDIR)
-	cd ($BAMDIR) ; \
+	cd $(BAMDIR) ; \
 	if [ ! -d $@ ] ; then mkdir $@ ; fi ; \
 	cd $@ ; \
 	if [ ! -d "1_sorted" ]; then mkdir "1_sorted"; echo "Created $@/1_sorted folder."; else echo "$@/1_sorted folder already exists."; fi; \
