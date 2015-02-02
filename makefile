@@ -7,7 +7,7 @@ SHELL=/bin/bash
 
 BAMDIR="/home/alolex/data/isilon_tcga/BRCA/WXS/"
 #BAMDIR="./test"
-BAMFILES=`echo "$(BAMDIR)/analysis_ids.txt"`
+BAMFILES=$(BAMDIR)/analysis_ids.txt
 
 
 
