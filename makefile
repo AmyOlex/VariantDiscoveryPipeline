@@ -5,8 +5,8 @@ SHELL=/bin/bash
 #  A makefile to run the picard preprocessing steps for TCGA bam files
 
 
-#BAMDIR="/home/alolex/data/isilon_tcga/BRCA/WXS/"
-BAMDIR="./test"
+BAMDIR="/home/alolex/data/isilon_tcga/BRCA/WXS/"
+#BAMDIR="./test"
 BAMFILES=`echo "$(BAMDIR)/analysis_ids.txt"`
 
 
