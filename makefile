@@ -38,8 +38,8 @@ sorted: $(BAMFILES)
 		echo "FOUND DIRECTORY ... Processing ... $$dir"; \
 		filebase=`basename $$bamfile .bam`; \
 		baifile=`echo $$bamfile.bai`; \		
-		input=`echo $(BAMDIR)$$dir/$$bamfile` ; \
-		output=`echo $(BAMDIR)/picard_processed/1_sorted/$$filebase.$@.bam ; \
+		input=`echo $(BAMDIR)$$dir/$$bamfile`; \
+		output=`echo $(BAMDIR)/picard_processed/1_sorted/$$filebase.$@.bam`; \
 		if [ -e $$output ]; then echo "File Exists, skipping ... $$output"; \
 		else \
 		    cmd=`echo "java -Xmx8g -Djava.io.tmpdir=/home/alolex/tmp/scratch -jar /opt/picard-tools-1.115/SortSam.jar INPUT=$$input OUTPUT=$$output SORT_ORDER=coordinate VALIDATION_STRINGENCY=LENIENT TMP_DIR=/home/alolex/tmp/scratch"`; \
