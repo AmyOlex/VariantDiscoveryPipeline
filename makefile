@@ -49,5 +49,5 @@ sorted: $(BAMFILES)
 		    echo "Done PICARD Sorting at `date` " $$semi \
 		fi $$semi \
 	
-	   fi \
+	   fi $$semi \
 	done )	
