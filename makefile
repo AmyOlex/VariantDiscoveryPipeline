@@ -11,7 +11,7 @@ BAMFILES=`echo "$(BAMDIR)/analysis_ids.txt"`
 
 
 
-all: test picard_processed
+all: $(BAMDIR) picard_processed
 
 $(BAMDIR): 
 	if [ ! -d $@ ]; then echo "BAM Directory does not exist."; fi 
