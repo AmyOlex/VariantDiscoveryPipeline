@@ -31,23 +31,23 @@ picard_processed: $(BAMDIR)
 
 ### Runs PICARD Tools Sorting on BAM files
 sorted: $(BAMFILES)
-	cat $(BAMFILES) | while read dir bamfile $$semi \
+	cat $(BAMFILES) | while read dir bamfile ; \
 	do \
-	   if [ ! -d $$dir ] $$semi then echo "$$dir does not exist." $$semi \
+	   if [ ! -d $$dir ] ; then echo "$$dir does not exist." ; \
 	   else \
-		echo "FOUND DIRECTORY ... Processing ... $$dir" $$semi \
-		filebase=`basename $$bamfile .bam` $$semi \
-		baifile=`echo $$bamfile.bai` $$semi \		
-		input=`echo $(BAMDIR)$$dir/$$bamfile` $$semi \
-		output=`echo $(BAMDIR)/picard_processed/1_sorted/$$filebase.$@.bam` $$semi \
-		if [ -e $$output ]; then echo "File Exists, skipping ... $$output" $$semi \
+		echo "FOUND DIRECTORY ... Processing ... $$dir" ; \
+		filebase=`basename $$bamfile .bam` ; \
+		baifile=`echo $$bamfile.bai` ; \		
+		input=`echo $(BAMDIR)$$dir/$$bamfile` ; \
+		output=`echo $(BAMDIR)/picard_processed/1_sorted/$$filebase.$@.bam` ; \
+		if [ -e $$output ]; then echo "File Exists, skipping ... $$output" ; \
 		else \
-		    cmd=`echo "java -Xmx8g -Djava.io.tmpdir=/home/alolex/tmp/scratch -jar /opt/picard-tools-1.115/SortSam.jar INPUT=$$input OUTPUT=$$output SORT_ORDER=coordinate VALIDATION_STRINGENCY=LENIENT TMP_DIR=/home/alolex/tmp/scratch"` $$semi \
-    		    echo "Executing PICARD Sorting at `date` ... $$cmd" $$semi \
-		    #eval $$cmd $$semi \
-		    echo $$cmd $$semi \
-		    echo "Done PICARD Sorting at `date` " $$semi \
-		fi $$semi \
+		    cmd=`echo "java -Xmx8g -Djava.io.tmpdir=/home/alolex/tmp/scratch -jar /opt/picard-tools-1.115/SortSam.jar INPUT=$$input OUTPUT=$$output SORT_ORDER=coordinate VALIDATION_STRINGENCY=LENIENT TMP_DIR=/home/alolex/tmp/scratch"` ; \
+    		    echo "Executing PICARD Sorting at `date` ... $$cmd" ; \
+		    #eval $$cmd ; \
+		    echo $$cmd ; \
+		    echo "Done PICARD Sorting at `date` " ; \
+		fi ; \
 	
-	   fi $$semi \
+	   fi ; \
 	done 	
