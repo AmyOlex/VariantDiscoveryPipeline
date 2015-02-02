@@ -31,7 +31,7 @@ picard_processed: $(BAMDIR)
 
 ### Runs PICARD Tools Sorting on BAM files
 sorted: $(BAMFILES)
-	$(shell cat $(BAMFILES) | while read dir bamfile $$semi \
+	cat $(BAMFILES) | while read dir bamfile $$semi \
 	do \
 	   if [ ! -d $$dir ] $$semi then echo "$$dir does not exist." $$semi \
 	   else \
@@ -50,4 +50,4 @@ sorted: $(BAMFILES)
 		fi $$semi \
 	
 	   fi $$semi \
-	done )	
+	done 	
