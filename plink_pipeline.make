@@ -63,7 +63,7 @@ vcfindex: vcfrename
 	    if [ -e $$f ]; \
 	    then \
 		rm $$f ; \
-	    fi \
+	    fi ; \
 	    tabix -p vcf $$f ; \
 	done
 
@@ -92,8 +92,8 @@ $(PHENOFILE):
 
 runplink: vcftoplink $(PHENOFILE)
 	infile=$(PLINKDIR)/$(MERGEFILE).SNPS.mainChrs.recode ; \
-	plink --file $$infile --noweb --pheno $(PHENOFILE) --geno 0.1 --filter-cases --recodeA --max-maf 0.05 --out $$infile.tumor_rare --nonfounders
-	plink --file $$infile --noweb --pheno $(PHENOFILE) --geno 0.1 --filter-cases --recodeA --maf 0.05 --out $$infile.tumor_common --nonfounders
-	plink --file $$infile --noweb --pheno $(PHENOFILE) --geno 0.1 --filter-controls --recodeA --max-maf 0.05 --out $$infile.normal_rare --nonfounders
-	plink --file $$infile --noweb --pheno $(PHENOFILE) --geno 0.1 --filter-controls --recodeA --maf 0.05 --out $$infile.normal_common --nonfounders
+	plink --file $$infile --noweb --pheno $(PHENOFILE) --geno 0.1 --filter-cases --recodeA --max-maf 0.05 --out $$infile.tumor_rare --nonfounders ; \
+	plink --file $$infile --noweb --pheno $(PHENOFILE) --geno 0.1 --filter-cases --recodeA --maf 0.05 --out $$infile.tumor_common --nonfounders ; \
+	plink --file $$infile --noweb --pheno $(PHENOFILE) --geno 0.1 --filter-controls --recodeA --max-maf 0.05 --out $$infile.normal_rare --nonfounders ; \
+	plink --file $$infile --noweb --pheno $(PHENOFILE) --geno 0.1 --filter-controls --recodeA --maf 0.05 --out $$infile.normal_common --nonfounders ;
 
