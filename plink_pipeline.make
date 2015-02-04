@@ -72,6 +72,8 @@ vcfindex: vcfrename
 	    fi ; \
 	done
 
+createplinkfiles: $(VCFFILES) $(PLINKDIR)
+
 ### Creates the list of vcf files to merge, but they have to be zipped, samples renamed and indexed first.
 $(VCFFILES): vcfrename
 	if [ -e $@ ]; then rm $@ ; fi ; \
