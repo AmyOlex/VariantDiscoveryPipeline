@@ -26,13 +26,13 @@ $(VCFDIR):
 ### Finds all files that have not been zipped and zips them.
 vcfzip: $(VCFDIR)
 	numfiles=$(shell ls $(VCFDIR) | grep -F ".platypus.VariantCalls.vcf"$ | wc -l); \
-	if [ numfiles = 0 ]; \
+	if [ numfiles != 0 ]; \
 	then \
 	    tozip=$(shell ls $(VCFDIR)/*.platypusVariantCalls.vcf) ; \
 	    for f in $$tozip; \
 	    do \
 	        bgzip $$f ; \
-	    done \
+	    done ; \
 	else \
 	    echo "No VCF files to zip." ; \
 	fi
