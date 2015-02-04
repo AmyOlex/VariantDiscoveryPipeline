@@ -9,7 +9,7 @@ SHELL=/bin/bash
 
 VCFDIR=/home/alolex/data/isilon_tcga/BRCA/WXS/platypus_vcf_files
 VCFFILES=vcf_files_to_merge_cohort30.txt
-FORMATTEDVCF=formatted_vcf_files
+FORMATTEDDIR=formatted_vcf_files
 MERGEDFILE=cohort30.bcfmerge.vcf
 PLINKDIR=plink_cohort30
 PHENOFILE=patient_alt_phenotype.txt
@@ -41,8 +41,14 @@ vcfzip: $(VCFDIR)
 $(RECODE):
 	if [ ! -e $@ ]; then echo "Recode file "$@" does not exist!" ; fi ;
 
+$(FORMATTEDDIR): $(VCFDIR)
+	if [ ! -d $(VCFDIR)/$(FORMATTEDDIR) ]; \
+	then \
+	    mkdir $(VCFDIR)/$(FORMATTEDDIR) ; \
+	fi
+
 ### Formats vcf files for plink analysis by adding sample names
-vcfrename: $(VCFDIR) $(RECODE) vcfzip
+vcfrename: $(VCFDIR) $(RECODE) vcfzip $(FORMATTEDDIR)
 	torename=`ls $(VCFDIR)/*.platypusVariantCalls.vcf.gz` ; \
 	for f in $$torename ; \
 	do \
@@ -50,19 +56,18 @@ vcfrename: $(VCFDIR) $(RECODE) vcfzip
 	    touch sample.rename ; \
 	    echo "`grep $$filebase $(RECODE) | cut -f 4`" > sample.rename ; \
 	    bgzip sample.rename ; \
-	    ~/bin/bcftools/bcftools reheader -s sample.rename.gz $$f > $$f.tmp ; \
-	    mv $$f.tmp $$f ; \
+	    ~/bin/bcftools/bcftools reheader -s sample.rename.gz $$f > $(VCFDIR)/$(FORMATTEDDIR)/$$f ; \
 	    rm sample.rename.gz ; \
 	done \
 
 ### Indexes the formatted vcf files after they have had samples renamed.
 vcfindex: vcfrename
-	toindex=`ls $(VCFDIR)*.platypusVariantCalls.vcf.gz` ; \
+	toindex=`ls $(VCFDIR)/$(FORMATTEDDIR)/*.platypusVariantCalls.vcf.gz` ; \
 	for f in $$toindex ; \
 	do \
-	    if [ -e $$f ]; \
+	    if [ -e $$f.tbi ]; \
 	    then \
-		rm $$f ; \
+		rm $$f.tbi ; \
 	    fi ; \
 	    tabix -p vcf $$f ; \
 	done
