@@ -66,16 +66,17 @@ vcfindex: vcfrename
 	do \
 	    if [ -e $$f.tbi ]; \
 	    then \
-		rm $$f.tbi ; \
+		echo "Index file exists ... "$$f.tbi ; \
+	    else \
+	        tabix -p vcf $$f ; \
 	    fi ; \
-	    tabix -p vcf $$f ; \
 	done
 
 ### Creates the list of vcf files to merge, but they have to be zipped, samples renamed and indexed first.
-$(VCFFILES): vcfzip vcfrename vcfindex
+$(VCFFILES): vcfrename
 	if [ -e $@ ]; then rm $@ ; fi ; \
 	touch $(VCFFILES) ; \
-	ls $(VCFDIR)/*.platypusVariantCalls.vcf.gz > $(VCFFILES) ;
+	ls $(VCFDIR)/$(FORMATTEDDIR)/*.platypusVariantCalls.vcf.gz > $(VCFFILES) ;
 
 $(PLINKDIR):
 	if [ ! -d $@ ]; then mkdir $@; fi
