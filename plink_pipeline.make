@@ -25,11 +25,17 @@ $(VCFDIR):
 
 ### Finds all files that have not been zipped and zips them.
 vcfzip: $(VCFDIR)
-	tozip=`ls $(VCFDIR)/*.platypusVariantCalls.vcf` ; \
-	for f in tozip; \
-	do \
-	    bgzip $$f ; \
-	done
+	numfiles=`ls $(VCFDIR) | grep ".platypus.VariantCalls.vcf$" | wc -l`; \
+	if [ numfiles = 0 ]; \
+	then \
+	    tozip=`ls $(VCFDIR)/*.platypusVariantCalls.vcf` ; \
+	    for f in $$tozip; \
+	    do \
+	        bgzip $$f ; \
+	    done \
+	else \
+	    echo "No VCF files to zip." ; \
+	fi
 
 ### Looks for the recode file
 $(RECODE):
@@ -38,21 +44,21 @@ $(RECODE):
 ### Formats vcf files for plink analysis by adding sample names
 vcfrename: $(VCFDIR) $(RECODE) vcfzip
 	torename=`ls $(VCFDIR)/*.platypusVariantCalls.vcf.gz` ; \
-	for f in torename ; \
+	for f in $$torename ; \
 	do \
 	    filebase=`basename $$f .platypusVariantCalls.vcf.gz` ; \
 	    touch sample.rename ; \
 	    echo "`grep $$filebase $(RECODE) | cut -f 4`" > sample.rename ; \
 	    bgzip sample.rename ; \
-	    ~/bin/bcftools/bcftools reheader -s sample.rename.gz $$f > m.$$f ; \
-	    mv m.$$f $$f ; \
+	    ~/bin/bcftools/bcftools reheader -s sample.rename.gz $$f > $$f.tmp ; \
+	    mv $$f.tmp $$f ; \
 	    rm sample.rename.gz ; \
 	done \
 
 ### Indexes the formatted vcf files after they have had samples renamed.
 vcfindex: vcfrename
 	toindex=`ls $(VCFDIR)*.platypusVariantCalls.vcf.gz` ; \
-	for f in toindex ; \
+	for f in $$toindex ; \
 	do \
 	    if [ -e $$f ]; \
 	    then \
