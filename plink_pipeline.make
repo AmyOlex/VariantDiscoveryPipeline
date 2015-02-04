@@ -50,7 +50,7 @@ vcfrename: $(VCFDIR) $(RECODE) vcfzip $(FORMATTEDDIR)
 	    touch sample.rename ; \
 	    echo "`grep $$filebase $(RECODE) | cut -f 4`" > sample.rename ; \
 	    bgzip sample.rename ; \
-	    ~/bin/bcftools/bcftools reheader -s sample.rename.gz $$f > $(VCFDIR)/$(FORMATTEDDIR)/$$f ; \
+	    ~/bin/bcftools/bcftools reheader -s sample.rename.gz $$f > $(VCFDIR)/$(FORMATTEDDIR)/$$filebase.platypusVariantCalls.vcf.gz ; \
 	    rm sample.rename.gz ; \
 	done \
 
