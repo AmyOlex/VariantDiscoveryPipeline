@@ -25,7 +25,7 @@ $(VCFDIR):
 
 ### Finds all files that have not been zipped and zips them.
 vcfzip: $(VCFDIR)
-	numfiles=$(shell ls $(VCFDIR) | grep -F ".platypus.VariantCalls.vcf"$ | wc -l); \
+	numfiles=$(shell ls $(VCFDIR) | grep ".platypus.VariantCalls.vcf$" | wc -l); \
 	if [ $$numfiles != 0 ] ; \
 	then \
 	    tozip=$(shell ls $(VCFDIR)/*.platypusVariantCalls.vcf) ; \
