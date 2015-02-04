@@ -63,9 +63,9 @@ vcfindex: vcfrename
 
 ### Creates the list of vcf files to merge, but they have to be zipped, samples renamed and indexed first.
 $(VCFFILES): vcfzip vcfrename vcfindex
-        if [ -e $@ ]; then rm $@ ; fi ; \
-        touch $(VCFFILES) ; \
-        ls $(VCFDIR)/*.platypusVariantCalls.vcf.gz > $(VCFFILES) ;
+	if [ -e $@ ]; then rm $@ ; fi ; \
+	touch $(VCFFILES) ; \
+	ls $(VCFDIR)/*.platypusVariantCalls.vcf.gz > $(VCFFILES) ;
 
 $(PLINKDIR):
 	if [ ! -d $@ ]; then mkdir $@; fi
