@@ -47,11 +47,16 @@ vcfrename: $(VCFDIR) $(RECODE) vcfzip $(FORMATTEDDIR)
 	for f in $$torename ; \
 	do \
 	    filebase=`basename $$f .platypusVariantCalls.vcf.gz` ; \
-	    touch sample.rename ; \
-	    echo "`grep $$filebase $(RECODE) | cut -f 4`" > sample.rename ; \
-	    bgzip sample.rename ; \
-	    ~/bin/bcftools/bcftools reheader -s sample.rename.gz $$f > $(VCFDIR)/$(FORMATTEDDIR)/$$filebase.platypusVariantCalls.vcf.gz ; \
-	    rm sample.rename.gz ; \
+	    if [ ! -e $(VCFDIR)/$(FORMATTEDDIR)/$$filebase.platypusVariantCalls.vcf.gz ]; \
+	    then \
+		touch sample.rename ; \
+		echo "`grep $$filebase $(RECODE) | cut -f 4`" > sample.rename ; \
+		bgzip sample.rename ; \
+		~/bin/bcftools/bcftools reheader -s sample.rename.gz $$f > $(VCFDIR)/$(FORMATTEDDIR)/$$filebase.platypusVariantCalls.vcf.gz ; \
+		rm sample.rename.gz ; \
+	    else \
+		echo "Formatted VCF file already exists...skipping." ; \
+	    fi ; \
 	done \
 
 ### Indexes the formatted vcf files after they have had samples renamed.
