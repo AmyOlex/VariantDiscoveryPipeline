@@ -25,17 +25,11 @@ $(VCFDIR):
 
 ### Finds all files that have not been zipped and zips them.
 vcfzip: $(VCFDIR)
-	numfiles=$(shell ls $(VCFDIR) | grep ".platypus.VariantCalls.vcf$" | wc -l); \
-	if [ $$numfiles != 0 ] ; \
-	then \
-	    tozip=$(shell ls $(VCFDIR)/*.platypusVariantCalls.vcf) ; \
-	    for f in $$tozip; \
-	    do \
-	        bgzip $$f ; \
-	    done ; \
-	else \
-	    echo "No VCF files to zip." ; \
-	fi
+	tozip=`ls $(VCFDIR)/*.platypusVariantCalls.vcf` ; \
+	for f in $$tozip ; \
+	do \
+	    bgzip $$f ; \
+	done ; \
 
 ### Looks for the recode file
 $(RECODE):
