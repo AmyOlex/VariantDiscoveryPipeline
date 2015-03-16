@@ -84,7 +84,7 @@ $(PLINKDIR):
 	if [ ! -d $@ ]; then mkdir $@; fi
 
 vcfmerge: $(VCFFILES) $(PLINKDIR)
-	~/bin/bcftools/bcftools merge -o $(PLINKDIR)/$(MERGEFILE) -O v `cat $(VCFFILES)`
+	~/bin/bcftools/bcftools merge -o ./$(PLINKDIR)/$(MERGEFILE) -O v `cat $(VCFFILES)`
 
 vcffilter: vcfmerge
 	infile=$(PLINKDIR)/$(MERGEFILE) ; \
